@@ -9,3 +9,12 @@ export function cn(...inputs: ClassValue[]) {
 export function parseStringify(value: IEvent) {
   return JSON.parse(JSON.stringify(value));
 }
+
+export function safeJsonParse<T>(value: string, defaultValue: T): T {
+  try {
+    return JSON.parse(value);
+  } catch (error) {
+    console.error("JSON parsing error:", error);
+    return defaultValue;
+  }
+}

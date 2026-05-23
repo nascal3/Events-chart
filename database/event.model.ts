@@ -15,6 +15,7 @@ export interface IEvent extends Document {
   audience: string;
   organizer: string;
   tags: string[];
+  agenda: string[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -99,6 +100,14 @@ const eventSchema: Schema<IEvent> = new Schema(
       validate: {
         validator: (tags: string[]) => tags.length > 0,
         message: 'Tags array cannot be empty',
+      },
+    },
+    agenda: {
+      type: [String],
+      required: [true, 'Agenda is required'],
+      validate: {
+        validator: (agenda: string[]) => agenda.length > 0,
+        message: 'Agenda array cannot be empty',
       },
     },
   },

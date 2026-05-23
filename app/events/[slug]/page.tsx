@@ -1,17 +1,83 @@
 import {notFound} from "next/navigation";
+import Image from "next/image";
+import {safeJsonParse} from "@/lib/utils";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+
+const EventDetailsItem = ({icon, alt, label}: {icon: string, alt: string, label: string}) => (
+    <div className="flex-row-gap-2 items-center">
+        <Image src={icon} alt={alt} width={17} height={17} />
+        <p>{label}</p>
+    </div>
+);
+
+const EventAgenda = ({agendaItems}: {agendaItems: {time: string, activity: string}[]}) => (
+    <div className="agenda">
+        <h2>Agenda</h2>
+        <ul>
+            {
+                agendaItems.map((item, index) => (
+                    <li key={index}>{item.time} - {item.activity}</li>
+                ))
+            }
+        </ul>
+    </div>
+);
+
+const EventTags = ({tags}: {tags: string[]}) => (
+    <div className="flex flex-row gap-1.5 flex-wrap">
+        {tags.map((tag, index) => (
+            <div className="pill" key={index}>{tag}</div>
+        ))}
+    </div>
+);
 
 const EventDetailsPage = async ({params}: {params: Promise<{slug: string}>}) => {
     const {slug} = await params;
     const request = await fetch(`${BASE_URL}/api/events/${slug}`);
-    const {event} = await request.json();
+    const {event: {description, image, overview, date, location, time, mode, agenda, audience, tags, organizer}} = await request.json();
 
-    if(!event) return notFound();
+    if(!description) return notFound();
 
     return (
         <section id="event">
-            <h1>Event Details: {slug}</h1>
+            <div className="header">
+                <h1>Event Description</h1>
+                <p>{description}</p>
+            </div>
+
+            <div className="details">
+                <div className="content">
+                    <Image src={image} alt="event image" width={800} height={800} className="banner" />
+
+                    <section className="flex-col-gap-2">
+                        <h2>Overview</h2>
+                        <p>{overview}</p>
+                    </section>
+
+                    <section className="flex-col-gap-2">
+                        <h2>Event Details</h2>
+                        <EventDetailsItem icon="/icons/calendar.svg" alt="calendar" label={date}/>
+                        <EventDetailsItem icon="/icons/clock.svg" alt="clock" label={time}/>
+                        <EventDetailsItem icon="/icons/pin.svg" alt="pin" label={location}/>
+                        <EventDetailsItem icon="/icons/mode.svg" alt="mode" label={mode}/>
+                        <EventDetailsItem icon="/icons/audience.svg" alt="audience" label={audience}/>
+                    </section>
+
+                    <EventAgenda agendaItems={safeJsonParse(agenda, [])}/>
+
+                    <section className="flex-col-gap-2">
+                        <h2>About the Organizer</h2>
+                        <p>{organizer}</p>
+                    </section>
+
+                    <EventTags tags={safeJsonParse(tags[0], [])}/>
+                </div>
+
+                <aside className="booking">
+                    <p className="text-lg font-semibold">Book Event</p>
+                </aside>
+            </div>
         </section>
     )
 }
