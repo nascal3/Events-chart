@@ -2,8 +2,6 @@ import {NextRequest, NextResponse} from "next/server";
 import {connectToDB} from "@/lib/mongodb";
 import Event from "@/database/event.model";
 import { v2 as cloudinary } from "cloudinary";
-import {arrayBuffer} from "node:stream/consumers";
-import {error} from "next/dist/build/output/log";
 
 export async function POST(req: NextRequest) {
   try {

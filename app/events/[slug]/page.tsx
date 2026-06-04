@@ -39,7 +39,7 @@ const EventTags = ({tags}: {tags: string[]}) => (
 const EventDetailsPage = async ({params}: {params: Promise<{slug: string}>}) => {
     const {slug} = await params;
     const request = await fetch(`${BASE_URL}/api/events/${slug}`);
-    const {event: {description, image, overview, date, location, time, mode, agenda, audience, tags, organizer}} = await request.json();
+    const {event: {description, image, overview, date, location, time, mode, agenda, audience, tags, organizer, _id}} = await request.json();
 
     if(!description) return notFound();
 
@@ -91,7 +91,7 @@ const EventDetailsPage = async ({params}: {params: Promise<{slug: string}>}) => 
                             <p className="text-sm">Be the first to book a spot</p>
                         )}
 
-                        <BookEvent />
+                        <BookEvent eventId={_id} slug={slug} />
                     </div>
                 </aside>
             </div>
